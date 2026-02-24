@@ -1,0 +1,33 @@
+name: lst
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy>=1.23
+  - scipy>=1.9
+  - pillow
+  - matplotlib
+  - tqdm
+  - pyyaml
+  - h5py
+  - setuptools
+  - wheel
+  - pytorch=2.1
+  - torchvision=0.16
+  - torchaudio=2.1
+  - pytorch-cuda=11.8
+  - cudnn
+  - cudatoolkit
+  - gcc        # for potential builds
+  - gxx        # for potential builds
+  - pip:
+      - mmengine>=0.10.3
+      - mmcv>=2.0.1
+      - mmagic>=1.1.0
+      - opencv-python
+      - tensorboard
+      - typing-extensions
