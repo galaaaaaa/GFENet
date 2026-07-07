@@ -17,9 +17,10 @@
 #                               TransferalPerceptualLoss)
 # from .pixelwise_loss import (CharbonnierLoss, L1Loss, MaskedTVLoss, MSELoss,
 #                              PSNRLoss, tv_loss)
-from .pixelwise_loss import SmoothL1Loss, SpatialFrequencyLoss
+from .pixelwise_loss import CombinedLoss, SmoothL1Loss, SpatialFrequencyLoss
 
 __all__ = [
+    "CombinedLoss",
     "SmoothL1Loss",
     "SpatialFrequencyLoss",
 ]

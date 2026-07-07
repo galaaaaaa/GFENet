@@ -22,7 +22,14 @@ model = dict(
         norm_dict=dict(mean=282.51, std=14.59, min=243.53, max=320.85),
         deploy=False,
     ),
-    pixel_loss=dict(type="L1Loss", loss_weight=1.0, reduction="mean"),
+    pixel_loss=dict(
+        type="CombinedLoss",
+        loss_weight=1.0,
+        w_data=1.0,
+        w_grad=0.1,
+        w_freq=0.5,
+        reduction="mean",
+    ),
     train_cfg=dict(),
     test_cfg=dict(
         metrics=[

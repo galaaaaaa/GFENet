@@ -102,3 +102,62 @@ class SpatialFrequencyLoss(nn.Module):
         # ---- Combined loss ----
         total_loss = l_spa + self.lambda_fre * l_fre
         return total_loss
+
+
+@MODELS.register_module()
+class CombinedLoss(nn.Module):
+    """MSE + Gradient + Frequency domain combined loss.
+
+    L_total = w_data * MSE + w_grad * L_grad + w_freq * L_freq
+
+    Gradient loss: L1 of first-order horizontal/vertical finite differences.
+    Frequency loss: L1 of 2D FFT amplitude spectrum.
+    """
+
+    def __init__(
+        self,
+        loss_weight: float = 1.0,
+        w_data: float = 1.0,
+        w_grad: float = 0.1,
+        w_freq: float = 0.5,
+        reduction: str = "mean",
+    ) -> None:
+        super().__init__()
+        if reduction not in _reduction_modes:
+            raise ValueError(f"Unsupported reduction mode: {reduction}. Supported ones are: {_reduction_modes}")
+        self.loss_weight = loss_weight
+        self.w_data = w_data
+        self.w_grad = w_grad
+        self.w_freq = w_freq
+        self.reduction = reduction
+
+    def forward(
+        self,
+        pred: torch.Tensor,
+        target: torch.Tensor,
+        weight: Optional[torch.Tensor] = None,
+        **kwargs,
+    ) -> torch.Tensor:
+        # gradient loss
+        pred_dx = pred[..., :, 1:] - pred[..., :, :-1]
+        target_dx = target[..., :, 1:] - target[..., :, :-1]
+        pred_dy = pred[..., 1:, :] - pred[..., :-1, :]
+        target_dy = target[..., 1:, :] - target[..., :-1, :]
+        l_grad = (pred_dx - target_dx).abs().mean() + (pred_dy - target_dy).abs().mean()
+
+        # frequency loss
+        pred_amp = torch.fft.fft2(pred, dim=(-2, -1)).abs()
+        target_amp = torch.fft.fft2(target, dim=(-2, -1)).abs()
+        l_freq = (pred_amp - target_amp).abs().mean()
+
+        # MSE loss with optional mask
+        sq_diff = (pred - target) ** 2
+        if weight is not None:
+            if weight.size(1) == 1:
+                weight = weight.expand_as(sq_diff)
+            l_mse = (sq_diff * weight).sum() / (weight.sum() + 1e-12)
+        else:
+            l_mse = sq_diff.mean()
+
+        total = self.w_data * l_mse + self.w_grad * l_grad + self.w_freq * l_freq
+        return self.loss_weight * total

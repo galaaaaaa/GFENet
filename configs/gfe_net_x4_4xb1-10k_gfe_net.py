@@ -16,7 +16,14 @@ model = dict(
         norm_flag=2,  # 0: not norm; 1: z-score; 2: min-max norm; other number: assert error.
         norm_dict=dict(mean=282.51, std=14.68, min=242.72, max=321.21),  # 120m paras
     ),
-    pixel_loss=dict(type="L1Loss", loss_weight=1.0, reduction="mean"),
+    pixel_loss=dict(
+        type="CombinedLoss",
+        loss_weight=1.0,
+        w_data=1.0,
+        w_grad=0.1,
+        w_freq=0.5,
+        reduction="mean",
+    ),
     train_cfg=dict(),
     test_cfg=dict(
         metrics=[
