@@ -13,8 +13,15 @@ All dependencies are included in ```environment.yml```. To install, run
 conda env create -f environment.yml
 ```
 ## Dataset Preparation
+[GrokLST](https://github.com/GrokCV/GrokLST)
+The datasets used in our paper are available at:
 
-You can find the required data from the link [GrokLST](https://github.com/GrokCV/GrokLST) and place them according to the path shown in ```configs/_base_/datasets```.
+| Dataset | Description | Download |
+| --- | --- | --- |
+| GrokLST | Main benchmark dataset for guided LST downscaling. | [GrokLST](https://github.com/GrokCV/GrokLST) |
+| ASTER-HLS | Cross-product generalization dataset used for evaluation. | [ASTER-HLS](https://drive.google.com/file/d/1vfGJkXWdBgDUPI-C3VHPl77zHqQpXXqQ/view?usp=drive_link)|
+
+
 
 ## Usage
 
